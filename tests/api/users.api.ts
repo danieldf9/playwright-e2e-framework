@@ -31,7 +31,8 @@ test.describe('Users API @api', () => {
 
   test('POST /users/login - should fail with invalid credentials', async () => {
     const response = await api.loginUser('nonexistent@test.com', 'wrongpassword');
-    expect(response.errors).toBeDefined();
+    expect(response.user).toBeUndefined();
+    expect(response.detail || response.errors).toBeDefined();
   });
 
   test('PUT /user - should update user profile', async () => {

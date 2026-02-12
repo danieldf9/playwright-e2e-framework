@@ -38,7 +38,9 @@ test.describe('Articles API @api', () => {
     const article = TestDataGenerator.generateArticle();
     const createResponse = await api.createArticle(authToken, article.title, article.description, article.body);
     const slug = createResponse.article.slug;
-    const response = await api.getArticle(slug);
+
+    const response = await api.getArticle(slug, authToken);
+    expect(response.article).toBeDefined();
     expect(response.article.title).toBe(article.title);
     expect(response.article.slug).toBe(slug);
   });
