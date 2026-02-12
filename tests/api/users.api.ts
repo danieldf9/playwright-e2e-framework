@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { ApiHelpers } from '../../src/utils/api-helpers';
 import { TestDataGenerator } from '../../src/utils/test-data-generator';
 
-const API_URL = process.env.API_URL || 'https://api.realworld.io/api';
+const API_URL = process.env.API_URL || 'https://api.realworld.show/api';
 
 test.describe('Users API @api', () => {
   let api: ApiHelpers;

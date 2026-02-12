@@ -26,10 +26,8 @@ jobs:
       - name: Run API tests
         run: npx playwright test --project=api
         env:
-          API_URL: https://api.realworld.io/api
-          BASE_URL: https://demo.realworld.io
-          TEST_USER_EMAIL: testuser@example.com
-          TEST_USER_PASSWORD: Password123!
+          API_URL: https://api.realworld.show/api
+          BASE_URL: https://demo.realworld.show
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
@@ -71,8 +69,8 @@ jobs:
       - name: Run ${{ matrix.project }} tests
         run: npx playwright test --project=${{ matrix.project }}
         env:
-          BASE_URL: https://demo.realworld.io
-          API_URL: https://api.realworld.io/api
+          BASE_URL: https://demo.realworld.show
+          API_URL: https://api.realworld.show/api
           TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL || 'testuser@example.com' }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD || 'Password123!' }}
 

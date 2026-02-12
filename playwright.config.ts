@@ -16,7 +16,7 @@ export default defineConfig({
     ['list'],
   ],
   use: {
-    baseURL: process.env.BASE_URL || 'https://demo.realworld.io',
+    baseURL: process.env.BASE_URL || 'https://demo.realworld.show',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -73,7 +73,7 @@ export default defineConfig({
       name: 'api',
       testMatch: /.*\.api\.ts/,
       use: {
-        baseURL: process.env.API_URL || 'https://api.realworld.io/api',
+        baseURL: process.env.API_URL || 'https://api.realworld.show/api',
       },
     },
   ],
