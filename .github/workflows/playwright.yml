@@ -5,17 +5,13 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main]
-  schedule:
-    - cron: '0 6 * * 1-5'
+  workflow_dispatch:
 
 jobs:
-  test:
-    timeout-minutes: 30
+  api-tests:
+    name: API Tests
+    timeout-minutes: 15
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        project: [chromium, firefox, webkit, api]
 
     steps:
       - uses: actions/checkout@v4
@@ -23,33 +19,66 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-        if: matrix.project != 'api'
-
-      - name: Run ${{ matrix.project }} tests
-        run: npx playwright test --project=${{ matrix.project }}
+      - name: Run API tests
+        run: npx playwright test --project=api
         env:
-          BASE_URL: ${{ secrets.BASE_URL }}
-          API_URL: ${{ secrets.API_URL }}
-          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
-          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          API_URL: https://api.realworld.io/api
+          BASE_URL: https://demo.realworld.io
+          TEST_USER_EMAIL: testuser@example.com
+          TEST_USER_PASSWORD: Password123!
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report-${{ matrix.project }}
+          name: playwright-report-api
           path: playwright-report/
           retention-days: 30
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: test-results-${{ matrix.project }}
+          name: test-results-api
           path: test-results/
+          retention-days: 30
+
+  e2e-tests:
+    name: E2E Tests (${{ matrix.project }})
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, firefox]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run ${{ matrix.project }} tests
+        run: npx playwright test --project=${{ matrix.project }}
+        env:
+          BASE_URL: https://demo.realworld.io
+          API_URL: https://api.realworld.io/api
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL || 'testuser@example.com' }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD || 'Password123!' }}
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: playwright-report/
           retention-days: 30

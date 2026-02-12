@@ -2,21 +2,23 @@ import { test, expect } from '@playwright/test';
 import { ApiHelpers } from '../../src/utils/api-helpers';
 import { TestDataGenerator } from '../../src/utils/test-data-generator';
 
-let api: ApiHelpers;
-let authToken: string;
-
-test.beforeAll(async ({ request }) => {
-  api = new ApiHelpers(request, process.env.API_URL || 'https://conduit.productionready.io/api');
-  const user = TestDataGenerator.generateUser();
-  const response = await api.createUser(user.username, user.email, user.password);
-  authToken = response.user.token;
-});
-
-test.beforeEach(async ({ request }) => {
-  api = new ApiHelpers(request, process.env.API_URL || 'https://conduit.productionready.io/api');
-});
+const API_URL = process.env.API_URL || 'https://api.realworld.io/api';
 
 test.describe('Articles API @api', () => {
+  let api: ApiHelpers;
+  let authToken: string;
+
+  test.beforeAll(async ({ request }) => {
+    api = new ApiHelpers(request, API_URL);
+    const user = TestDataGenerator.generateUser();
+    const response = await api.createUser(user.username, user.email, user.password);
+    authToken = response.user.token;
+  });
+
+  test.beforeEach(async ({ request }) => {
+    api = new ApiHelpers(request, API_URL);
+  });
+
   test('GET /articles - should return list of articles', async () => {
     const response = await api.getArticles({ limit: 10 });
     expect(response.articles).toBeDefined();
